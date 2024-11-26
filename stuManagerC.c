@@ -28,9 +28,9 @@ int main() {
     system("cls");
     while (1) {
         system("cls");
-        printf("\n--------- 学生成绩管理系统 ---------\n");
-        printf("1. 录入学生成绩\n2. 显示学生成绩\n3. 查找学生成绩\n4. 排序\n5. 显示统计\n0. 退出\n");
-        printf("-------------------------------------\n");
+        printf("----------学生成绩管理系统----------------------------------------------\n");
+		printf("1. 录入学生成绩\n2. 显示学生成绩\n3. 查找学生成绩\n4. 排序\n5. 显示统计\n0. 退出\n");
+		printf("-----------------------------------------------------------------------\n");
         printf("请选择 (0-5): ");
         scanf("%d", &choice);
 
@@ -52,8 +52,10 @@ int main() {
                     printf("请输入学号: ");
                     scanf("%d", &id);
                     int index = findById(students, numStudents, id);
+                    system("cls");
                     if (index != -1) {
-                        printf("找到学生: %d %s %.2f\n", students[index].id, students[index].name, students[index].score);
+                        printf("找到学生: %d %s %.2f\n"
+                        , students[index].id, students[index].name, students[index].score);
                     } else {
                         printf("未找到该学号对应的学生。\n");
                     }
@@ -63,8 +65,10 @@ int main() {
                     printf("请输入姓名: ");
                     scanf("%s", name);
                     int index = findByName(students, numStudents, name);
+                    system("cls");
                     if (index != -1) {
-                        printf("找到学生: %d %s %.2f\n", students[index].id, students[index].name, students[index].score);
+                        printf("找到学生: %d %s %.2f\n"
+                        , students[index].id, students[index].name, students[index].score);
                     } else {
                         printf("未找到该姓名对应的学生。\n");
                     }
@@ -80,10 +84,12 @@ int main() {
 
                 if (sortChoice == 1) {
                     sortById(students, numStudents);
+                    system("cls");
                     printf("按学号排序完成。\n");
                     system("pause");
                 } else if (sortChoice == 2) {
                     sortByScore(students, numStudents);
+                    system("cls");
                     printf("按成绩排序完成。\n");
                     system("pause");
                 }
@@ -147,7 +153,8 @@ void displayStudents(const struct Student students[], int num) {
     system("cls");
     printf("学号\t姓名\t成绩\n");
     for (int i = 0; i < num; i++) {
-        printf("%d\t%s\t%.2f\n", students[i].id, students[i].name, students[i].score);
+        printf("%d\t%s\t%.2f\n", 
+        students[i].id, students[i].name, students[i].score);
     }
     system("pause");
 }
