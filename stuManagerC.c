@@ -22,10 +22,13 @@ void displayStatistics(const struct Student students[], int num);
 int isDuplicateId(const struct Student students[], int id, int num);
 void modifyStudent(struct Student students[], int num);
 void deleteStudent(struct Student students[], int *num);
+void saveToFile(struct Student students[], int num);
+void loadFromFile(struct Student students[], int *num);
 
 int main() {
     struct Student students[MAX_STUDENTS];
     int numStudents = 0; // 当前学生人数
+    loadFromFile(students, &numStudents);
     int choice;
     system("cls");
     while (1) {
@@ -109,6 +112,7 @@ int main() {
                 break;
             case 0: // 退出
                 printf("程序退出。\n");
+                saveToFile(students, numStudents);
                 return 0;
             default:
                 printf("无效的选择，请重新输入。\n");
@@ -364,4 +368,43 @@ void deleteStudent(struct Student students[], int *num) {
     }
 
     system("pause");
+}
+
+//保存学生成绩为文件
+void saveToFile(struct Student students[], int num) {
+    FILE *file = fopen("students.txt", "w");
+    if (file == NULL) {
+        printf("无法打开文件进行保存。\n");
+        return;
+    }
+
+    for (int i = 0; i < num; i++) {
+        fprintf(file, "%d %s %.2f %.2f %.2f %.2f\n", 
+                students[i].id, students[i].name, 
+                students[i].chinese, students[i].math, 
+                students[i].eng, students[i].score);
+    }
+
+    fclose(file);
+    printf("数据已保存。\n");
+}
+
+//从文件读取学生数据
+void loadFromFile(struct Student students[], int *num) {
+    FILE *file = fopen("students.txt", "r");
+    if (file == NULL) {
+        printf("没有找到保存的数据文件，程序将以空数据启动。\n");
+
+        return;
+    }
+
+    while (fscanf(file, "%d %s %lf %lf %lf %lf", 
+                   &students[*num].id, students[*num].name, 
+                   &students[*num].chinese, &students[*num].math, 
+                   &students[*num].eng, &students[*num].score) == 6) {
+        (*num)++;
+    }
+
+    fclose(file);
+    printf("数据已加载。\n");
 }
