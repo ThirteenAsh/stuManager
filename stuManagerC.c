@@ -8,7 +8,7 @@
 struct Student {
     int id;
     char name[20];
-    double score;
+    double score, chinese, math, eng;
 };
 
 // 函数声明
@@ -20,6 +20,8 @@ void sortById(struct Student students[], int num);
 void sortByScore(struct Student students[], int num);
 void displayStatistics(const struct Student students[], int num);
 int isDuplicateId(const struct Student students[], int id, int num);
+void modifyStudent(struct Student students[], int num);
+void deleteStudent(struct Student students[], int *num);
 
 int main() {
     struct Student students[MAX_STUDENTS];
@@ -28,10 +30,10 @@ int main() {
     system("cls");
     while (1) {
         system("cls");
-        printf("----------学生成绩管理系统----------------------------------------------\n");
-		printf("1. 录入学生成绩\n2. 显示学生成绩\n3. 查找学生成绩\n4. 排序\n5. 显示统计\n0. 退出\n");
-		printf("-----------------------------------------------------------------------\n");
-        printf("请选择 (0-5): ");
+        printf("----------学生成绩管理系统------------------------------------\n");
+		printf("1. 录入学生成绩\n2. 显示学生成绩\n3. 查找学生成绩\n4. 排序\n5. 显示统计\n6. 修改学生信息\n7. 删除学生信息\n0. 退出\n");
+		printf("-------------------------------------------------------------\n");
+        printf("请选择 (0-7): ");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -99,6 +101,12 @@ int main() {
             case 5: // 统计
                 displayStatistics(students, numStudents);
                 break;
+            case 6:
+                modifyStudent(students, numStudents);
+                break;
+            case 7:
+                deleteStudent(students, &numStudents);
+                break;
             case 0: // 退出
                 printf("程序退出。\n");
                 return 0;
@@ -133,15 +141,35 @@ void inputStudents(struct Student students[], int *num) {
         printf("姓名: ");
         scanf("%s", students[*num].name);
 
-        double score;
-        printf("成绩 (0-100): ");
-        scanf("%lf", &score);
-        while (score < 0 || score > 100) {
-            printf("成绩无效，请重新输入: ");
-            scanf("%lf", &score);
-        }
-        students[*num].score = score;
+        double score,chinese, math, eng;
 
+        printf("语文成绩 (0-100): ");
+        scanf("%lf", &chinese);
+        while (chinese < 0 || chinese > 100) {
+            printf("成绩无效，请重新输入: ");
+            scanf("%lf", &chinese);
+        }
+        students[*num].chinese = chinese;
+
+        printf("数学成绩 (0-100): ");
+        scanf("%lf", &math);
+        while (math < 0 || math > 100) {
+            printf("成绩无效，请重新输入: ");
+            scanf("%lf", &math);
+        }
+        students[*num].math = math;
+
+        printf("英语成绩 (0-100): ");
+        scanf("%lf", &eng);
+        while (eng < 0 || eng > 100) {
+            printf("成绩无效，请重新输入: ");
+            scanf("%lf", &eng);
+        }
+        students[*num].eng = eng;
+
+        score = eng + math + chinese;//计算总分
+        students[*num].score = score;
+        
         (*num)++;
     }
     printf("录入完成。\n");
@@ -244,4 +272,96 @@ int isDuplicateId(const struct Student students[], int id, int num) {
         }
     }
     return 0;
+}
+
+//修改学生信息
+void modifyStudent(struct Student students[], int num) {
+    int id;
+    printf("请输入要修改的学生学号: ");
+    scanf("%d", &id);
+
+    // 查找学生
+    int index = findById(students, num, id);
+    if (index == -1) {
+        printf("未找到学号为 %d 的学生。\n", id);
+        system("pause");
+        return;
+    }
+
+    // 显示当前信息
+    printf("当前学生信息:\n");
+    printf("学号: %d\n姓名: %s\n语文成绩: %.2f\n数学成绩: %.2f\n英语成绩: %.2f\n总分: %.2f\n",
+           students[index].id, students[index].name,
+           students[index].chinese, students[index].math,
+           students[index].eng, students[index].score);
+
+    // 修改信息
+    printf("请输入新的信息 (直接按回车跳过修改某项):\n");
+
+    printf("姓名 (当前: %s): ", students[index].name);
+    char newName[20];
+    getchar(); // 清除缓冲区的换行符
+    fgets(newName, 20, stdin);
+    if (newName[0] != '\n') { // 如果用户输入了新值
+        newName[strcspn(newName, "\n")] = '\0'; // 去掉换行符
+        strcpy(students[index].name, newName);
+    }
+
+    printf("语文成绩 (当前: %.2f): ", students[index].chinese);
+    double chinese;
+    if (scanf("%lf", &chinese) == 1 && chinese >= 0 && chinese <= 100) {
+        students[index].chinese = chinese;
+    }
+
+    printf("数学成绩 (当前: %.2f): ", students[index].math);
+    double math;
+    if (scanf("%lf", &math) == 1 && math >= 0 && math <= 100) {
+        students[index].math = math;
+    }
+
+    printf("英语成绩 (当前: %.2f): ", students[index].eng);
+    double eng;
+    if (scanf("%lf", &eng) == 1 && eng >= 0 && eng <= 100) {
+        students[index].eng = eng;
+    }
+
+    // 更新总分
+    students[index].score = students[index].chinese + students[index].math + students[index].eng;
+
+    printf("修改成功！\n");
+    system("pause");
+}
+
+//删除学生信息
+void deleteStudent(struct Student students[], int *num) {
+    int id;
+    printf("请输入要删除的学生学号: ");
+    scanf("%d", &id);
+
+    // 查找学生
+    int index = findById(students, *num, id);
+    if (index == -1) {
+        printf("未找到学号为 %d 的学生。\n", id);
+        system("pause");
+        return;
+    }
+
+    // 确认删除
+    char confirm;
+    printf("确认删除学号为 %d 的学生 (%s)? (Y/N): ", id, students[index].name);
+    getchar(); // 清除缓冲区的换行符
+    scanf("%c", &confirm);
+
+    if (confirm == 'Y' || confirm == 'y') {
+        // 删除学生：将后续学生的数据往前移
+        for (int i = index; i < *num - 1; i++) {
+            students[i] = students[i + 1];
+        }
+        (*num)--; // 学生人数减1
+        printf("删除成功！\n");
+    } else {
+        printf("删除操作已取消。\n");
+    }
+
+    system("pause");
 }
